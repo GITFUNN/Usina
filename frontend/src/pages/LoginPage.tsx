@@ -17,15 +17,14 @@ const LoginPage = () => {
     const loginMutation = useMutation({
         mutationFn: () => loginRequest(email, password),
         onSuccess: (response) => {
-            setToken(response.data.access, response.data.refresh);
-            toast.success("Login successful")   
-            navigate("/precios");
+            setToken(response.data.access, response.data.refresh);  
+            navigate("/lista-precios");
         },
         onError: (error) => {
             if (typeof error === 'string') {
                 toast.error(error);
             } else {
-                toast.error('An error occurred');
+                toast.error('Hubo un error, intentá de nuevo!');
             }
         },
     });
@@ -67,12 +66,12 @@ const LoginPage = () => {
                             <button type="submit" className="w-full text-white bg-gradient-to-r from-black to-fuchsia-950 hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 text-center col-start-2">Ingresar</button>
                             
                         </form>
-                        <Toaster />
+                        
                     </div>
                 </div>
                 
             </div>
-            
+           <Toaster /> 
         </div>
     );
 }

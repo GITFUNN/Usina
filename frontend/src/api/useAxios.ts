@@ -32,9 +32,9 @@ authApi.interceptors.request.use(async (config) => {
 
   const expiration = new Date(tokenDecoded.exp * 1000);
   const now = new Date();
-  const tenMinutes = 1000 * 60 * 10;
+  const fiveMinutes = 1000 * 60 * 5;
 
-  if(expiration.getTime() - now.getTime() < tenMinutes)
+  if(expiration.getTime() - now.getTime() < fiveMinutes)
   try {
     const res = await axi.post('/users/refresh/', { refresh: useAuthStore.getState().refresh })
     useAuthStore.getState().setToken(res.data.access, res.data.refresh)

@@ -1,6 +1,6 @@
 import { createDrinkRequest, getDrinkRequest, 
     getDrinksRequest, editDrinkRequest, deleteDrinkRequest} from "../api/general"
-import { useState,Fragment} from "react";
+import { useState,Fragment,useEffect} from "react";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast, { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '../store/auth.ts';
@@ -31,20 +31,33 @@ const MainPage = ()=>{
     const[price2, setPrice2] = useState();
     const[show2, setShow2] = useState(false);
     const[IdToEdit, setIdToEdit] = useState(0);
-    const [copied, setCopied] = useState(false);  
-    const notify = () => toast.success('¡Alias Copiado!', {
+    const [copied, setCopied] = useState(false);
+    const [mode, setMode] = useState(false);
+    const [theme, setTheme] = useState('light');
+    const notify = () => toast.success('¡Alias copiado!', {
       style: {
     border: '1px solid #800080',
     padding: '8px',
-    color: '#800080',
-    background:'black',
+    color: '#black',
+    background:'ffffff',
   },  
   iconTheme: {
     primary: '#800080',
     secondary: '#FFFAEE',
   },
+ });
 
-    });
+useEffect(() => {
+  if(theme === 'dark') {
+    document.documentElement.classList.add('dark');
+  }else{
+    document.documentElement.classList.remove('dark');
+  }
+
+},[theme]);
+
+
+   
 
     function logOutFun() {
         useAuthStore.getState().logout()
@@ -58,7 +71,14 @@ const MainPage = ()=>{
     });
 
     
+    const handleSetMode = () => {
+      if (theme === 'dark') {
+        setMode(true);
 
+      }else{
+        setMode(false);
+      }
+    }
     
     const createDrinkMutation = useMutation({
         mutationFn: () => createDrinkRequest(name, price),
@@ -114,6 +134,11 @@ const handleEditSubmit = (event: React.FormEvent<HTMLFormElement>) => {
   });
 }
 
+const HandleSwitchTheme = ()=>{
+  setTheme(theme === 'dark'? 'light' : 'dark');
+  handleSetMode();
+};
+
 const openEditForm = (id: number,name2:string,price2:number ) => {
   setShow2(true);
   // Guardar el ID del elemento en un estado si es necesario
@@ -143,12 +168,15 @@ function classNames(...classes: any) {
       if (error instanceof Error) return <>{toast.error(error.message)}</>
 
     return(
-        <>
+      
+        <div className="min-h-screen font-display bg-black text-xl text-nowrap">
+          
         {isAuth ? (
         
 
         
-        <div className="min-h-screen bg-black text-xl font-display ">
+        <div className="min-h-screen scroll-smooth">
+          
           
           {show2 && 
           <div className="z-50 flex flex-row justify-center items-center fixed top-0 left-0 w-full h-full text-black ">
@@ -181,7 +209,7 @@ function classNames(...classes: any) {
           />
         </div>
         <div className="flex items-center justify-end mx-4">
-          <button type="submit" className=" w-1/4 p-1 text-white bg-black hover:bg-gray-900 text-sm mb-2 text-center transition duration-25 rounded-full">Crear</button>
+          <button type="submit" className=" w-1/4 p-1 text-white bg-black hover:bg-gray-900 text-sm mb-2 text-center transition duration-25 rounded-full">Aceptar</button>
         </div>
       </form>
     </div>
@@ -389,7 +417,7 @@ function classNames(...classes: any) {
         
         ) : (
           
-        <div className="min-h-screen bg-black text-xl scroll-smooth font-display ">
+        <div className="min-h-screen ">
           <div className="flex justify-center ">
                     <img className="w-40 h-40 md:w-56 md:h-56 select-none"  src={Logo} alt="logo"/>
                 </div>
@@ -415,7 +443,7 @@ function classNames(...classes: any) {
            
             <div className=" inline-block justify-center  border rounded-full  border-black text-center items-center p-2 mt-6 bg-black ring-2 ring-fuchsia-950 hover:ring-3 hover:ring-fuchsia-800 trasition duration-150">
               <a href="https://www.instagram.com/lausinanew?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="blank_">
-          <svg className="fill-white h-12 w-12 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
+          <svg className="fill-white h-10 w-10 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
           </a>
           </div>
            <a href="https://www.instagram.com/lausinanew?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="blank_">
@@ -452,7 +480,7 @@ function classNames(...classes: any) {
 
         
         
-        </>
+        </div>
     )
 }
 
